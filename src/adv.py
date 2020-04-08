@@ -1,4 +1,10 @@
 from room import Room
+from player import Player
+
+# Two control scehmes:
+
+# n, s, w, e
+# WASD
 
 # Declare all the rooms
 
@@ -33,12 +39,13 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+print(room['outside'])
 #
 # Main
 #
 
 # Make a new player object that is currently in the 'outside' room.
-
+my_player = Player(room['outside'])
 # Write a loop that:
 #
 # * Prints the current room name
@@ -47,5 +54,25 @@ room['treasure'].s_to = room['narrow']
 #
 # If the user enters a cardinal direction, attempt to move to the room there.
 # Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+
+def error_no_room():
+    print("There is no room in that direction. Try again!\n")
+
+play = True
+while play == True:
+    current_room = my_player.current_room
+    user_input = input("Type a direction:  ")
+    print('\n')
+    if user_input in ['n','s','w','e']:
+        new_room = current_room.room_check(user_input)
+        if new_room:
+            my_player.move(new_room)
+            print(new_room)
+            new_room.list_items()
+        else:
+            error_no_room()
+    elif user_input == 'q':
+        play = False
+    else:
+        print('Not a valid command! \n Commands:\nn s w e to move \nq to quit')
+
