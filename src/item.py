@@ -1,15 +1,15 @@
 class Item():
     def __init__(self,name,description):
-        self.name = name
+        self.name = name.lower()
         self.description = description
-    def 
+    def on_take(self):
+        print(f"You picked up a {self.name}!")
+    def on_drop(self):
+        print(f"You dropped a {self.name}!")
+
 
 class Weapon(Item):
-    super().__init__()
-
     def __init__(self,name,description, damage, weight):
         super().__init__(self,name,description)
         self.damage = 10
         self.weight = weight
-    
-    def 

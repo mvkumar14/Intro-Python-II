@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Two control scehmes:
 
@@ -39,6 +40,10 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+# Add items to rooms:
+sword = Item('Sword','A Rusty Broadsword... Better than nothing I suppose?')
+room['outside'].add_item(sword)
+
 print(room['outside'])
 #
 # Main
@@ -54,25 +59,68 @@ my_player = Player(room['outside'])
 #
 # If the user enters a cardinal direction, attempt to move to the room there.
 # Print an error message if the movement isn't allowed.
+def invalid_command():
+    print('Not a valid command!\n\nCommands:\n[n s w e] to move \n[q]       to quit\n')
 
-def error_no_room():
-    print("There is no room in that direction. Try again!\n")
+
+# Create a class for the parser itself? 
+
+# Refactor the code so that the room can change the state of the parser
+# So the room can give the parser details about the available actions of the room
+# This requires that the parser itself is an object. 
+
+# this shows the boundary between game designer and 
+# game. The Designer thinks of the the game objects and the computer 
+# objects as one. The tools of the designer to help program the game
+# are no different programmatically compared to the objects in the game. 
+# the tools themselves are objects used to communicate with game objects.
+
+# this way you can reveal a virtual world and all you have to define is how 
+# user inputs map to exploration of that world. The context/ the world details will
+# change the behavior of the input parsing to the world.
+
+# This matches/lines up nicely with the actions a user will take
+# if you naturally progress through the game, the general actions you would
+# take wouldn't be specific like " pee in a corner ", or 'stare really closely at the wall'
+# or 'start breaking the wall'
+# . It would be generic like move, interact with interactables and so on
+# The "realism" is something that the person invites into the game, not the other 
+# way around.
 
 play = True
 while play == True:
     current_room = my_player.current_room
-    user_input = input("Type a direction:  ")
-    print('\n')
-    if user_input in ['n','s','w','e']:
-        new_room = current_room.room_check(user_input)
-        if new_room:
-            my_player.move(new_room)
-            print(new_room)
-            new_room.list_items()
+    user_input = input("~~>:  ")
+    print('-'*40)
+    
+    if len(user_input.split())==2:
+        verb, noun = user_input.split()
+        verb = verb.lower()
+        noun = noun.lower()
+        if verb == 'get' or verb == 'take':
+            all_items = ['all','everything']
+            if noun in all_items:
+                my_player.get_all()
+                pass
+            else:
+                my_player.get_item(noun)
+                pass
+        if verb == 'drop' or verb == 'leave':
+            my_player.drop_item(noun)
+            pass
+
         else:
-            error_no_room()
-    elif user_input == 'q':
-        play = False
+            print('test')
+            pass
     else:
-        print('Not a valid command! \n Commands:\nn s w e to move \nq to quit')
+        if user_input in ['n','s','w','e']:
+            my_player.move(user_input)
+            my_player.current_room.list_items()
+        elif user_input == 'i' or user_input == 'inventory':
+            my_player.print_inventory()
+        elif user_input == 'q':
+            play = False
+        else:
+            invalid_command()
+        
 
